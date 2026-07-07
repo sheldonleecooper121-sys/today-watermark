@@ -4,7 +4,7 @@ const CONFIG = Object.freeze({
   template:{x:0,y:0,width:2448,height:3264,opacity:1},
   fonts:{zh:"HYQiHei",en:"DINAlternate"},
   defaults:{time:"09:02",date:"2026-07-04",week:"星期六",weather:"晴  29°C",location:"济宁市邹城市·太平东路",code:"ECEYKNUW123456"},
-  time:{x:49.62,y:2962,fontSize:254.58,horizontalScale:.9,maxWidth:540,fill:"#fff",textureColor:"rgba(120,155,190,.32)",textureOpacity:.45,lineWidth:0,stroke:"rgba(255,255,255,0)",shadowColor:"rgba(0,0,0,0)",shadowBlur:0,shadowOffsetY:0,textureOffsets:[[0,0]]},
+  time:{x:49.62,y:2979.37,fontSize:254.58,horizontalScale:.9,maxWidth:540,fill:"#fff",textureColor:"rgba(130,170,205,.24)",textureOpacity:.24,lineWidth:0,stroke:"rgba(255,255,255,0)",shadowColor:"rgba(0,0,0,0)",shadowBlur:0,shadowOffsetY:0,textureOffsets:[[0,0]]},
   date:{x:640,y:2862.39,fontSize:120.4,horizontalScale:.83,maxWidth:620,minFontSize:60},
   week:{x:646,y:2997.87,fontSize:109.75,horizontalScale:.83,maxWidth:850,minFontSize:55},
   location:{x:70.61,y:3141.45,fontSize:83.8,horizontalScale:.815,minFontSize:42,maxWidth:1500,ellipsis:true},
