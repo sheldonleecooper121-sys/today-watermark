@@ -4,10 +4,10 @@ const CONFIG = Object.freeze({
   template:{x:0,y:0,width:2448,height:3264,opacity:1},
   fonts:{zh:"HYQiHei",en:"DINAlternate"},
   defaults:{time:"09:02",date:"2026-07-04",week:"星期六",weather:"晴  29°C",location:"济宁市邹城市·太平东路",code:"ECEYKNUW123456"},
-  time:{x:54,y:2992,fontSize:214,horizontalScale:.88,maxWidth:490,fill:"#fff",textureColor:"rgba(70,130,185,.95)",textureOpacity:1,lineWidth:.2,stroke:"rgba(255,255,255,.35)",shadowColor:"rgba(0,0,0,.22)",shadowBlur:3,shadowOffsetY:1,textureOffsets:[[-1,0],[0,0],[1,0],[0,-1],[0,1]]},
-  date:{x:655,y:2872,fontSize:92,horizontalScale:.82,maxWidth:520,minFontSize:54},
-  week:{x:651,y:3002,fontSize:88,horizontalScale:.82,maxWidth:760,minFontSize:50},
-  location:{x:70,y:3150,fontSize:66,horizontalScale:.82,minFontSize:38,maxWidth:1420,ellipsis:true},
+  time:{x:49.62,y:2979.37,fontSize:214,horizontalScale:.88,maxWidth:490,fill:"#fff",textureColor:"rgba(70,130,185,.95)",textureOpacity:1,lineWidth:.2,stroke:"rgba(255,255,255,.35)",shadowColor:"rgba(0,0,0,.22)",shadowBlur:3,shadowOffsetY:1,textureOffsets:[[-1,0],[0,0],[1,0],[0,-1],[0,1]]},
+  date:{x:684.31,y:2862.39,fontSize:92,horizontalScale:.82,maxWidth:520,minFontSize:54},
+  week:{x:674.16,y:2997.87,fontSize:88,horizontalScale:.82,maxWidth:760,minFontSize:50},
+  location:{x:70.61,y:3141.45,fontSize:66,horizontalScale:.82,minFontSize:38,maxWidth:1420,ellipsis:true},
   code:{x:2105.65,y:3236.2,fontSize:34.55,horizontalScale:.83,minFontSize:20,maxWidth:300,prefix:"",length:14},
   debug:{color:"#00e5ff",labelFont:"24px monospace",lineWidth:2}
 });
