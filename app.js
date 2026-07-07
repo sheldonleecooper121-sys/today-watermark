@@ -64,7 +64,6 @@ function debugBox(name,box){const c=CONFIG.debug;ctx.save();ctx.strokeStyle=c.co
 function render(){
   const {width,height}=CONFIG.canvas;ctx.clearRect(0,0,width,height);
   const v=values();
-  if(matchesReference(v)){ctx.drawImage(assets.referenceComposite,0,0);return}
   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
   if(photo){const f=fitCover(photo.naturalWidth,photo.naturalHeight,width,height);ctx.drawImage(photo,f.x,f.y,f.width,f.height)}else{ctx.fillStyle="#202020";ctx.fillRect(0,0,width,height);ctx.fillStyle="#777";ctx.font='48px HYQiHei';ctx.textAlign="center";ctx.fillText("请选择一张图片",width/2,height/2);ctx.textAlign="start"}
   drawTemplate();const boxes={};boxes.time=drawTextureTime(v.time);
@@ -94,5 +93,5 @@ async function exportImage(){
 }
 el.export.addEventListener("click",exportImage);
 
-async function init(){const d=CONFIG.defaults;el.time.value=d.time;el.date.value=d.date;el.week.value=d.week;el.weather.value=d.weather;el.location.value=d.location;el.code.value=d.code;try{[assets.template,assets.texture,assets.referenceComposite,photo]=await Promise.all([loadImage(CONFIG.assets.template),loadImage(CONFIG.assets.texture),loadImage(CONFIG.assets.referenceComposite),loadImage(CONFIG.assets.defaultPhoto)]);await document.fonts.ready;render();setStatus("ASSETS CHECK PASSED · 已载入 test.jpg 示例图。")}catch(error){console.error(error);setStatus(`素材加载失败：${error.message}`,true)}}
+async function init(){const d=CONFIG.defaults;el.time.value=d.time;el.date.value=d.date;el.week.value=d.week;el.weather.value=d.weather;el.location.value=d.location;el.code.value=d.code;try{[assets.template,assets.texture,assets.referenceComposite,photo]=await Promise.all([loadImage(CONFIG.assets.template),loadImage(CONFIG.assets.texture),loadImage(CONFIG.assets.referenceComposite),loadImage(CONFIG.assets.defaultPhoto)]);await document.fonts.ready;render();setStatus("ASSETS CHECK PASSED · 已载入 test.jpg 示例图，预览使用动态 Canvas。")}catch(error){console.error(error);setStatus(`素材加载失败：${error.message}`,true)}}
 init();
