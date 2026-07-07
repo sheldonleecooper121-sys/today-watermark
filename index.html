@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b0b0b">
+  <title>3:4 图片水印生成器</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div><p class="eyebrow">CANVAS WATERMARK</p><h1>3:4 图片水印生成器</h1></div>
+      <span class="privacy">图片仅在本机处理</span>
+    </header>
+    <section class="workspace">
+      <section class="preview-card">
+        <div class="canvas-wrap"><canvas id="canvas" width="2448" height="3264"></canvas></div>
+        <p id="status" role="status">请选择图片。系统将居中裁切为 2448×3264。</p>
+      </section>
+      <aside>
+        <label class="upload">上传或拍摄图片<input id="fileInput" type="file" accept="image/*" capture="environment"></label>
+        <div class="grid">
+          <label>时间<input id="timeInput" type="time"></label>
+          <label>日期<input id="dateInput" type="date"></label>
+          <label>星期<select id="weekInput"><option>星期一</option><option>星期二</option><option>星期三</option><option>星期四</option><option>星期五</option><option>星期六</option><option>星期日</option></select></label>
+          <label>天气<input id="weatherInput" value="阴 25°C"></label>
+          <label class="full">地点<input id="locationInput" value="济宁市邹城市 · 玉兰路"></label>
+          <label class="full">编码<div class="inline"><input id="codeInput" readonly><button id="codeButton" type="button">重新生成</button></div></label>
+        </div>
+        <label class="debug"><input id="debugInput" type="checkbox"> Debug 辅助线</label>
+        <div class="actions">
+          <button id="updateButton" type="button">更新水印</button>
+          <button id="exportButton" class="primary" type="button">导出 PNG</button>
+        </div>
+      </aside>
+    </section>
+  </main>
+  <script src="./app.js"></script>
+</body>
+</html>

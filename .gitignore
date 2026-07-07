@@ -1,0 +1,20 @@
+.DS_Store
+
+# Codex / project working notes
+AGENTS.md
+agent_memory/
+work/
+inputs/
+outputs/
+
+# Large source materials and temporary design files
+*.psd
+*.zip
+众图网_*/
+众图网_19255223水印底纹PSD分层图 2/
+
+# Local raw photos outside publishable assets
+/微信图片_*.jpg
+/assets/test.jpg
+/今日.psd
+/watermark_template_可复用.psd
