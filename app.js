@@ -4,10 +4,10 @@ const CONFIG = Object.freeze({
   template:{x:0,y:0,width:2448,height:3264},
   fonts:{zh:"HYQiHei",en:"DINAlternate"},
   defaults:{time:"09:02",date:"2026-07-04",week:"星期六",weather:"晴  29°C",location:"济宁市邹城市·太平东路",code:"ECEYKNUW123456"},
-  time:{x:49.62,y:2979.37,fontSize:254.58,horizontalScale:.9,maxWidth:540,lineWidth:0,shadowBlur:0},
-  date:{x:684.31,y:2862.39,fontSize:120.4,horizontalScale:.83,maxWidth:620,minFontSize:60},
-  week:{x:674.16,y:2997.87,fontSize:109.75,horizontalScale:.83,maxWidth:850,minFontSize:55},
-  location:{x:70.61,y:3141.45,fontSize:83.8,horizontalScale:.815,minFontSize:42,maxWidth:1500,ellipsis:true},
+  time:{x:54,y:2992,fontSize:214,horizontalScale:.88,maxWidth:490,fill:"#fff",textureColor:"rgba(128,168,205,.72)",textureOpacity:1,lineWidth:.4,stroke:"rgba(255,255,255,.45)",shadowColor:"rgba(0,0,0,.25)",shadowBlur:3,shadowOffsetY:1},
+  date:{x:655,y:2872,fontSize:92,horizontalScale:.82,maxWidth:520,minFontSize:54},
+  week:{x:651,y:3002,fontSize:88,horizontalScale:.82,maxWidth:760,minFontSize:50},
+  location:{x:70,y:3150,fontSize:66,horizontalScale:.82,minFontSize:38,maxWidth:1420,ellipsis:true},
   code:{x:2105.65,y:3236.2,fontSize:34.55,horizontalScale:.83,minFontSize:20,maxWidth:300,prefix:"",length:14},
   debug:{color:"#00e5ff",labelFont:"24px monospace",lineWidth:2}
 });
@@ -32,10 +32,11 @@ function drawTemplate(){
 }
 function drawTextureTime(text){
   const c=CONFIG.time,off=document.createElement("canvas");off.width=CONFIG.canvas.width;off.height=CONFIG.canvas.height;
-  const o=off.getContext("2d");o.save();o.scale(c.horizontalScale,1);o.font=font(c.fontSize,CONFIG.fonts.en);o.textBaseline="alphabetic";o.fillStyle="#fff";o.fillText(text,c.x/c.horizontalScale,c.y,c.maxWidth/c.horizontalScale);o.restore();
-  o.globalCompositeOperation="source-in";
-  const pattern=o.createPattern(assets.texture,"repeat");o.fillStyle=pattern;o.fillRect(0,0,off.width,off.height);
-  ctx.drawImage(off,0,0);ctx.save();ctx.scale(c.horizontalScale,1);ctx.font=font(c.fontSize,CONFIG.fonts.en);ctx.textBaseline="alphabetic";ctx.strokeStyle="rgba(255,255,255,.9)";ctx.lineWidth=c.lineWidth;ctx.shadowColor="rgba(0,0,0,.8)";ctx.shadowBlur=c.shadowBlur;ctx.strokeText(text,c.x/c.horizontalScale,c.y,c.maxWidth/c.horizontalScale);ctx.restore();
+  const o=off.getContext("2d");o.save();o.scale(c.horizontalScale,1);o.font=font(c.fontSize,CONFIG.fonts.en);o.textBaseline="alphabetic";o.fillStyle=c.fill;o.fillText(text,c.x/c.horizontalScale,c.y,c.maxWidth/c.horizontalScale);o.restore();
+  const wave=document.createElement("canvas");wave.width=CONFIG.canvas.width;wave.height=CONFIG.canvas.height;
+  const w=wave.getContext("2d");w.drawImage(assets.texture,0,0,CONFIG.canvas.width,CONFIG.canvas.height);w.globalCompositeOperation="source-in";w.fillStyle=c.textureColor;w.fillRect(0,0,wave.width,wave.height);
+  o.save();o.globalCompositeOperation="source-atop";o.globalAlpha=c.textureOpacity;o.drawImage(wave,0,0);o.restore();
+  ctx.drawImage(off,0,0);ctx.save();ctx.scale(c.horizontalScale,1);ctx.font=font(c.fontSize,CONFIG.fonts.en);ctx.textBaseline="alphabetic";ctx.strokeStyle=c.stroke;ctx.lineWidth=c.lineWidth;ctx.shadowColor=c.shadowColor;ctx.shadowBlur=c.shadowBlur;ctx.shadowOffsetY=c.shadowOffsetY;ctx.strokeText(text,c.x/c.horizontalScale,c.y,c.maxWidth/c.horizontalScale);ctx.restore();
   return measure(text,c,CONFIG.fonts.en);
 }
 function measure(text,c,family,size=c.fontSize){ctx.font=font(size,family);const m=ctx.measureText(text),scale=c.horizontalScale||1;return{x:c.x,y:c.y-size,width:Math.min(m.width*scale,c.maxWidth),height:size,maxWidth:c.maxWidth}}
