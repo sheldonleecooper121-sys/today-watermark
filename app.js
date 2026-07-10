@@ -2,7 +2,7 @@ const CONFIG = Object.freeze({
   canvas:{width:2448,height:3264},
   assets:{template:"./assets/watermark-template.png",texture:"./assets/time-texture.png",referenceComposite:"./assets/reference.png",defaultPhoto:"./assets/test-render-source.png"},
   overlay:{x:0,y:2300,width:2448,height:964,top:"rgba(0,0,0,0)",bottom:"rgba(0,0,0,.36)"},
-  template:{x:0,y:0,width:2448,height:3264,opacity:1,lineErase:{x:560,y:2750,width:120,height:300},line:{x:576,y:2786,width:18,height:212,color:"#ffc600"}},
+  template:{x:0,y:0,width:2448,height:3264,opacity:1},
   fonts:{zh:"HYQiHei",en:"DINAlternate"},
   defaults:{time:"09:02",date:"2026-07-04",week:"星期六",weather:"晴  29°C",location:"济宁市邹城市·太平东路",code:"ECEYKNUW123456"},
   time:{x:35,y:2967,fontSize:254.58,fontWeight:700,horizontalScale:.9,verticalScale:.9,maxWidth:540,baseFill:"#fff",textureOpacity:.95,gradientOpacity:.14,gradientTop:"rgba(255,255,255,0)",gradientBottom:"rgba(116,170,205,.42)",lineWidth:0,stroke:"rgba(255,255,255,0)",shadowColor:"rgba(0,0,0,0)",shadowBlur:0,shadowOffsetY:0,textureOffsets:[[0,0]]},
@@ -21,6 +21,7 @@ const assets={template:new Image(),texture:new Image(),referenceComposite:new Im
 let usingReferencePhoto=false;
 
 function loadImage(src){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error(`无法加载 ${src}`));image.src=src})}
+function assetSource(key){return window.WATERMARK_INLINE_ASSETS?.[key]||CONFIG.assets[key]}
 function fitCover(sw,sh,tw,th){const scale=Math.max(tw/sw,th/sh),w=sw*scale,h=sh*scale;return{x:(tw-w)/2,y:(th-h)/2,width:w,height:h}}
 function randomCode(){const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",bytes=crypto.getRandomValues(new Uint8Array(CONFIG.code.length));return Array.from(bytes,n=>chars[n%chars.length]).join("")}
 function values(){return{time:el.time.value||"--:--",date:el.date.value||"---- -- --",week:el.week.value,weather:el.weather.value||"天气",location:el.location.value||"位置未填写",code:el.code.value}}
@@ -37,17 +38,10 @@ function fieldWeight(c,text,size,family){
 
 function drawTemplate(){
   const c=CONFIG.template;
-  const off=document.createElement("canvas");off.width=CONFIG.canvas.width;off.height=CONFIG.canvas.height;
-  const o=off.getContext("2d");
-  o.drawImage(assets.template,c.x,c.y,c.width,c.height);
-  o.globalCompositeOperation="destination-out";
-  o.fillRect(c.lineErase.x,c.lineErase.y,c.lineErase.width,c.lineErase.height);
   ctx.save();
   ctx.globalAlpha=c.opacity;
   ctx.globalCompositeOperation="source-over";
-  ctx.drawImage(off,0,0);
-  ctx.fillStyle=c.line.color;
-  ctx.fillRect(c.line.x,c.line.y,c.line.width,c.line.height);
+  ctx.drawImage(assets.template,c.x,c.y,c.width,c.height);
   ctx.restore();
 }
 function drawOverlay(){
@@ -121,5 +115,5 @@ async function exportImage(){
 }
 el.export.addEventListener("click",exportImage);
 
-async function init(){const d=CONFIG.defaults;el.time.value=d.time;el.date.value=d.date;el.week.value=d.week;el.weather.value=d.weather;el.location.value=d.location;el.code.value=d.code;try{[assets.template,assets.texture]=await Promise.all([loadImage(CONFIG.assets.template),loadImage(CONFIG.assets.texture)]);await document.fonts.ready;render();setStatus(`ASSETS CHECK PASSED · 模板 ${assets.template.naturalWidth}×${assets.template.naturalHeight} · 纹理 ${assets.texture.naturalWidth}×${assets.texture.naturalHeight}`)}catch(error){console.error(error);setStatus(`素材加载失败：${error.message}`,true)}}
+async function init(){const d=CONFIG.defaults;el.time.value=d.time;el.date.value=d.date;el.week.value=d.week;el.weather.value=d.weather;el.location.value=d.location;el.code.value=d.code;try{[assets.template,assets.texture]=await Promise.all([loadImage(assetSource("template")),loadImage(assetSource("texture"))]);await document.fonts.ready;render();setStatus(`ASSETS CHECK PASSED · 内嵌模板 ${assets.template.naturalWidth}×${assets.template.naturalHeight} · 内嵌纹理 ${assets.texture.naturalWidth}×${assets.texture.naturalHeight}`)}catch(error){console.error(error);setStatus(`素材加载失败：${error.message}`,true)}}
 init();
