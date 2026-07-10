@@ -1,6 +1,6 @@
 const CONFIG = Object.freeze({
   canvas:{width:2448,height:3264},
-  assets:{template:"./assets/watermark-template.png",texture:"./assets/time-texture.png",referenceComposite:"./assets/reference.png",defaultPhoto:"./assets/test-render-source.png"},
+  assets:{template:"./assets/watermark-template-aligned.png",texture:"./assets/time-texture.png",referenceComposite:"./assets/reference.png",defaultPhoto:"./assets/test-render-source.png"},
   overlay:{x:0,y:2300,width:2448,height:964,top:"rgba(0,0,0,0)",bottom:"rgba(0,0,0,.36)"},
   template:{x:0,y:0,width:2448,height:3264,opacity:1},
   fonts:{zh:"HYQiHei",en:"DINAlternate"},
