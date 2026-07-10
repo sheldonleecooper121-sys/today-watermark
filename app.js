@@ -2,14 +2,14 @@ const CONFIG = Object.freeze({
   canvas:{width:2448,height:3264},
   assets:{template:"./assets/watermark-template.png",texture:"./assets/time-texture.png",referenceComposite:"./assets/reference.png",defaultPhoto:"./assets/test-render-source.png"},
   overlay:{x:0,y:2300,width:2448,height:964,top:"rgba(0,0,0,0)",bottom:"rgba(0,0,0,.36)"},
-  template:{x:0,y:0,width:2448,height:3264,opacity:1},
+  template:{x:0,y:0,width:2448,height:3264,opacity:1,lineErase:{x:560,y:2750,width:120,height:300},line:{x:576,y:2786,width:18,height:212,color:"#ffc600"}},
   fonts:{zh:"HYQiHei",en:"DINAlternate"},
   defaults:{time:"09:02",date:"2026-07-04",week:"星期六",weather:"晴  29°C",location:"济宁市邹城市·太平东路",code:"ECEYKNUW123456"},
-  time:{x:35,y:2967,fontSize:254.58,horizontalScale:.9,verticalScale:.9,maxWidth:540,baseFill:"#fff",textureOpacity:.95,gradientOpacity:.14,gradientTop:"rgba(255,255,255,0)",gradientBottom:"rgba(116,170,205,.42)",lineWidth:0,stroke:"rgba(255,255,255,0)",shadowColor:"rgba(0,0,0,0)",shadowBlur:0,shadowOffsetY:0,textureOffsets:[[0,0]]},
-  date:{x:646,y:2859,fontSize:120.4,horizontalScale:.83,verticalScale:.86,maxWidth:620,minFontSize:60},
-  week:{x:648,y:2998,fontSize:109.75,horizontalScale:.83,verticalScale:.78,maxWidth:850,minFontSize:55},
-  location:{x:56,y:3141.45,fontSize:83.8,horizontalScale:.815,verticalScale:1,minFontSize:42,maxWidth:1500,ellipsis:true},
-  code:{x:2105.65,y:3236.2,fontSize:34.55,horizontalScale:.83,minFontSize:20,maxWidth:300,prefix:"",length:14},
+  time:{x:35,y:2967,fontSize:254.58,fontWeight:700,horizontalScale:.9,verticalScale:.9,maxWidth:540,baseFill:"#fff",textureOpacity:.95,gradientOpacity:.14,gradientTop:"rgba(255,255,255,0)",gradientBottom:"rgba(116,170,205,.42)",lineWidth:0,stroke:"rgba(255,255,255,0)",shadowColor:"rgba(0,0,0,0)",shadowBlur:0,shadowOffsetY:0,textureOffsets:[[0,0]]},
+  date:{x:646,y:2859,fontSize:120.4,fontWeight:520,fontWeightAuto:true,minFontWeight:420,maxFontWeight:560,horizontalScale:.83,verticalScale:.86,maxWidth:620,minFontSize:60},
+  week:{x:648,y:2998,fontSize:109.75,fontWeight:500,fontWeightAuto:true,minFontWeight:400,maxFontWeight:540,horizontalScale:.83,verticalScale:.78,maxWidth:850,minFontSize:55},
+  location:{x:56,y:3141.45,fontSize:83.8,fontWeight:500,fontWeightAuto:true,minFontWeight:400,maxFontWeight:540,horizontalScale:.815,verticalScale:1,minFontSize:42,maxWidth:1500,ellipsis:true},
+  code:{x:2105.65,y:3236.2,fontSize:34.55,fontWeight:500,horizontalScale:.83,minFontSize:20,maxWidth:300,prefix:"",length:14},
   debug:{color:"#00e5ff",labelFont:"24px monospace",lineWidth:2}
 });
 
@@ -25,14 +25,29 @@ function fitCover(sw,sh,tw,th){const scale=Math.max(tw/sw,th/sh),w=sw*scale,h=sh
 function randomCode(){const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",bytes=crypto.getRandomValues(new Uint8Array(CONFIG.code.length));return Array.from(bytes,n=>chars[n%chars.length]).join("")}
 function values(){return{time:el.time.value||"--:--",date:el.date.value||"---- -- --",week:el.week.value,weather:el.weather.value||"天气",location:el.location.value||"位置未填写",code:el.code.value}}
 function matchesReference(v){const d=CONFIG.defaults;return usingReferencePhoto&&!el.debug.checked&&Object.keys(d).every(key=>v[key]===d[key])}
-function font(size,family){return `700 ${size}px "${family}"`}
+function font(size,family,weight=700){return `${weight} ${size}px "${family}"`}
+function fieldWeight(c,text,size,family){
+  if(!c.fontWeightAuto)return c.fontWeight||700;
+  const min=c.minFontWeight||400,max=c.maxFontWeight||c.fontWeight||560,scale=c.horizontalScale||1;
+  ctx.font=font(size,family,max);
+  const pressure=Math.min(1,ctx.measureText(text).width*scale/c.maxWidth);
+  const t=Math.max(0,(pressure-.55)/.45);
+  return Math.round((max-(max-min)*t)/10)*10;
+}
 
 function drawTemplate(){
   const c=CONFIG.template;
+  const off=document.createElement("canvas");off.width=CONFIG.canvas.width;off.height=CONFIG.canvas.height;
+  const o=off.getContext("2d");
+  o.drawImage(assets.template,c.x,c.y,c.width,c.height);
+  o.globalCompositeOperation="destination-out";
+  o.fillRect(c.lineErase.x,c.lineErase.y,c.lineErase.width,c.lineErase.height);
   ctx.save();
   ctx.globalAlpha=c.opacity;
   ctx.globalCompositeOperation="source-over";
-  ctx.drawImage(assets.template,c.x,c.y,c.width,c.height);
+  ctx.drawImage(off,0,0);
+  ctx.fillStyle=c.line.color;
+  ctx.fillRect(c.line.x,c.line.y,c.line.width,c.line.height);
   ctx.restore();
 }
 function drawOverlay(){
@@ -44,7 +59,7 @@ function drawTextureTime(text){
   const c=CONFIG.time,vScale=c.verticalScale||1;
   const off=document.createElement("canvas");off.width=CONFIG.canvas.width;off.height=CONFIG.canvas.height;
   const o=off.getContext("2d");
-  o.save();o.scale(c.horizontalScale,vScale);o.font=font(c.fontSize,CONFIG.fonts.en);o.textBaseline="alphabetic";o.fillStyle="#000";o.fillText(text,c.x/c.horizontalScale,c.y/vScale,c.maxWidth/c.horizontalScale);o.restore();
+  o.save();o.scale(c.horizontalScale,vScale);o.font=font(c.fontSize,CONFIG.fonts.en,c.fontWeight);o.textBaseline="alphabetic";o.fillStyle="#000";o.fillText(text,c.x/c.horizontalScale,c.y/vScale,c.maxWidth/c.horizontalScale);o.restore();
   const fill=document.createElement("canvas");fill.width=CONFIG.canvas.width;fill.height=CONFIG.canvas.height;
   const f=fill.getContext("2d"),top=c.y-c.fontSize*vScale,gradient=f.createLinearGradient(0,top,0,c.y);
   f.fillStyle=c.baseFill;f.fillRect(c.x,top,c.maxWidth,c.fontSize*vScale);
@@ -52,23 +67,24 @@ function drawTextureTime(text){
   f.save();f.globalAlpha=c.gradientOpacity;f.fillStyle=gradient;f.fillRect(c.x,top,c.maxWidth,c.fontSize*vScale);f.restore();
   f.save();f.globalAlpha=c.textureOpacity;c.textureOffsets.forEach(([dx,dy])=>f.drawImage(assets.texture,dx,dy,CONFIG.canvas.width,CONFIG.canvas.height));f.restore();
   o.save();o.globalCompositeOperation="source-in";o.drawImage(fill,0,0);o.restore();
-  ctx.drawImage(off,0,0);ctx.save();ctx.scale(c.horizontalScale,vScale);ctx.font=font(c.fontSize,CONFIG.fonts.en);ctx.textBaseline="alphabetic";ctx.strokeStyle=c.stroke;ctx.lineWidth=c.lineWidth;ctx.shadowColor=c.shadowColor;ctx.shadowBlur=c.shadowBlur;ctx.shadowOffsetY=c.shadowOffsetY;ctx.strokeText(text,c.x/c.horizontalScale,c.y/vScale,c.maxWidth/c.horizontalScale);ctx.restore();
+  ctx.drawImage(off,0,0);ctx.save();ctx.scale(c.horizontalScale,vScale);ctx.font=font(c.fontSize,CONFIG.fonts.en,c.fontWeight);ctx.textBaseline="alphabetic";ctx.strokeStyle=c.stroke;ctx.lineWidth=c.lineWidth;ctx.shadowColor=c.shadowColor;ctx.shadowBlur=c.shadowBlur;ctx.shadowOffsetY=c.shadowOffsetY;ctx.strokeText(text,c.x/c.horizontalScale,c.y/vScale,c.maxWidth/c.horizontalScale);ctx.restore();
   return measure(text,c,CONFIG.fonts.en);
 }
-function measure(text,c,family,size=c.fontSize){ctx.font=font(size,family);const m=ctx.measureText(text),scale=c.horizontalScale||1,vScale=c.verticalScale||1;return{x:c.x,y:c.y-size*vScale,width:Math.min(m.width*scale,c.maxWidth),height:size*vScale,maxWidth:c.maxWidth}}
+function measure(text,c,family,size=c.fontSize){ctx.font=font(size,family,fieldWeight(c,text,size,family));const m=ctx.measureText(text),scale=c.horizontalScale||1,vScale=c.verticalScale||1;return{x:c.x,y:c.y-size*vScale,width:Math.min(m.width*scale,c.maxWidth),height:size*vScale,maxWidth:c.maxWidth}}
 function drawFit(text,c,family){
   let size=c.fontSize,scale=c.horizontalScale||1,vScale=c.verticalScale||1;ctx.textBaseline="alphabetic";
-  while(size>c.minFontSize){ctx.font=font(size,family);if(ctx.measureText(text).width*scale<=c.maxWidth)break;size-=2}
+  while(size>c.minFontSize){ctx.font=font(size,family,c.maxFontWeight||c.fontWeight||700);if(ctx.measureText(text).width*scale<=c.maxWidth)break;size-=2}
   let output=text;
   if(c.ellipsis&&ctx.measureText(output).width*scale>c.maxWidth){while(output.length&&ctx.measureText(`${output}…`).width*scale>c.maxWidth)output=output.slice(0,-1);output+="…"}
-  ctx.save();ctx.scale(scale,vScale);ctx.fillStyle="#fff";ctx.font=font(size,family);ctx.fillText(output,c.x/scale,c.y/vScale);ctx.restore();return measure(output,c,family,size)
+  ctx.save();ctx.scale(scale,vScale);ctx.fillStyle="#fff";ctx.font=font(size,family,fieldWeight(c,output,size,family));ctx.fillText(output,c.x/scale,c.y/vScale);ctx.restore();return measure(output,c,family,size)
 }
 function drawWeek(text){
   const c=CONFIG.week,scale=c.horizontalScale||1,vScale=c.verticalScale||1,match=text.match(/^(.*?)(\d.*)$/),prefix=match?.[1]||text,suffix=match?.[2]||"";
   ctx.save();ctx.scale(scale,vScale);ctx.textBaseline="alphabetic";ctx.fillStyle="#fff";
-  ctx.font=font(c.fontSize,CONFIG.fonts.zh);ctx.fillText(prefix,c.x/scale,c.y/vScale);
+  const weight=fieldWeight(c,text,c.fontSize,CONFIG.fonts.zh);
+  ctx.font=font(c.fontSize,CONFIG.fonts.zh,weight);ctx.fillText(prefix,c.x/scale,c.y/vScale);
   const prefixWidth=ctx.measureText(prefix).width;
-  ctx.font=font(c.fontSize,CONFIG.fonts.en);ctx.fillText(suffix,c.x/scale+prefixWidth,c.y/vScale);
+  ctx.font=font(c.fontSize,CONFIG.fonts.en,weight);ctx.fillText(suffix,c.x/scale+prefixWidth,c.y/vScale);
   const width=(prefixWidth+ctx.measureText(suffix).width)*scale;ctx.restore();
   return{x:c.x,y:c.y-c.fontSize*vScale,width:Math.min(width,c.maxWidth),height:c.fontSize*vScale,maxWidth:c.maxWidth}
 }
