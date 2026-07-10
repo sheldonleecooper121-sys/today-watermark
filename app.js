@@ -1,6 +1,6 @@
 const CONFIG = Object.freeze({
   canvas:{width:2448,height:3264},
-  assets:{version:"20260710-5",template:"./assets/watermark-template.png",texture:"./assets/time-texture.png",referenceComposite:"./assets/reference.png",defaultPhoto:"./assets/test-render-source.png"},
+  assets:{template:"./assets/watermark-template.png",texture:"./assets/time-texture.png",referenceComposite:"./assets/reference.png",defaultPhoto:"./assets/test-render-source.png"},
   overlay:{x:0,y:2300,width:2448,height:964,top:"rgba(0,0,0,0)",bottom:"rgba(0,0,0,.36)"},
   template:{x:0,y:0,width:2448,height:3264,opacity:1},
   fonts:{zh:"HYQiHei",en:"DINAlternate"},
@@ -18,10 +18,9 @@ const el={canvas:$("#canvas"),file:$("#fileInput"),time:$("#timeInput"),date:$("
 const ctx=el.canvas.getContext("2d");
 let photo=null;
 const assets={template:new Image(),texture:new Image(),referenceComposite:new Image()};
-let usingReferencePhoto=true;
+let usingReferencePhoto=false;
 
 function loadImage(src){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error(`无法加载 ${src}`));image.src=src})}
-function assetUrl(src){return `${src}?v=${CONFIG.assets.version}`}
 function fitCover(sw,sh,tw,th){const scale=Math.max(tw/sw,th/sh),w=sw*scale,h=sh*scale;return{x:(tw-w)/2,y:(th-h)/2,width:w,height:h}}
 function randomCode(){const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",bytes=crypto.getRandomValues(new Uint8Array(CONFIG.code.length));return Array.from(bytes,n=>chars[n%chars.length]).join("")}
 function values(){return{time:el.time.value||"--:--",date:el.date.value||"---- -- --",week:el.week.value,weather:el.weather.value||"天气",location:el.location.value||"位置未填写",code:el.code.value}}
@@ -106,5 +105,5 @@ async function exportImage(){
 }
 el.export.addEventListener("click",exportImage);
 
-async function init(){const d=CONFIG.defaults;el.time.value=d.time;el.date.value=d.date;el.week.value=d.week;el.weather.value=d.weather;el.location.value=d.location;el.code.value=d.code;try{[assets.template,assets.texture,assets.referenceComposite,photo]=await Promise.all([loadImage(assetUrl(CONFIG.assets.template)),loadImage(assetUrl(CONFIG.assets.texture)),loadImage(assetUrl(CONFIG.assets.referenceComposite)),loadImage(assetUrl(CONFIG.assets.defaultPhoto))]);await document.fonts.ready;render();setStatus(`ASSETS CHECK PASSED · 模板 ${assets.template.naturalWidth}×${assets.template.naturalHeight} · 纹理 ${assets.texture.naturalWidth}×${assets.texture.naturalHeight}`)}catch(error){console.error(error);setStatus(`素材加载失败：${error.message}`,true)}}
+async function init(){const d=CONFIG.defaults;el.time.value=d.time;el.date.value=d.date;el.week.value=d.week;el.weather.value=d.weather;el.location.value=d.location;el.code.value=d.code;try{[assets.template,assets.texture]=await Promise.all([loadImage(CONFIG.assets.template),loadImage(CONFIG.assets.texture)]);await document.fonts.ready;render();setStatus(`ASSETS CHECK PASSED · 模板 ${assets.template.naturalWidth}×${assets.template.naturalHeight} · 纹理 ${assets.texture.naturalWidth}×${assets.texture.naturalHeight}`)}catch(error){console.error(error);setStatus(`素材加载失败：${error.message}`,true)}}
 init();
