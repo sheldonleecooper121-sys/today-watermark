@@ -1,10 +1,11 @@
 const CONFIG = Object.freeze({
   canvas:{width:2448,height:3264},
   assets:{template:"./assets/watermark-template.png",texture:"./assets/time-texture.png",referenceComposite:"./assets/reference.png",defaultPhoto:"./assets/test-render-source.png"},
-  template:{x:0,y:0,width:2448,height:3264,opacity:1,lineErase:{x:560,y:2750,width:120,height:300},line:{x:576,y:2786,width:18,height:212,color:"#ffc600"}},
+  overlay:{x:0,y:2300,width:2448,height:964,top:"rgba(0,0,0,0)",bottom:"rgba(0,0,0,.36)"},
+  template:{x:0,y:0,width:2448,height:3264,opacity:1},
   fonts:{zh:"HYQiHei",en:"DINAlternate"},
   defaults:{time:"09:02",date:"2026-07-04",week:"星期六",weather:"晴  29°C",location:"济宁市邹城市·太平东路",code:"ECEYKNUW123456"},
-  time:{x:35,y:2967,fontSize:254.58,horizontalScale:.9,verticalScale:.9,maxWidth:540,fill:"#fff",textureOpacity:.34,gradientOpacity:.22,gradientTop:"rgba(255,255,255,0)",gradientBottom:"rgba(120,170,205,.55)",lineWidth:0,stroke:"rgba(255,255,255,0)",shadowColor:"rgba(0,0,0,0)",shadowBlur:0,shadowOffsetY:0,textureOffsets:[[0,0]]},
+  time:{x:35,y:2967,fontSize:254.58,horizontalScale:.9,verticalScale:.9,maxWidth:540,baseFill:"#fff",textureOpacity:.42,gradientOpacity:.26,gradientTop:"rgba(255,255,255,0)",gradientBottom:"rgba(116,170,205,.58)",lineWidth:0,stroke:"rgba(255,255,255,0)",shadowColor:"rgba(0,0,0,0)",shadowBlur:0,shadowOffsetY:0,textureOffsets:[[0,0]]},
   date:{x:646,y:2859,fontSize:120.4,horizontalScale:.83,verticalScale:.86,maxWidth:620,minFontSize:60},
   week:{x:648,y:2998,fontSize:109.75,horizontalScale:.83,verticalScale:.78,maxWidth:850,minFontSize:55},
   location:{x:56,y:3141.45,fontSize:83.8,horizontalScale:.815,verticalScale:1,minFontSize:42,maxWidth:1500,ellipsis:true},
@@ -28,27 +29,29 @@ function font(size,family){return `700 ${size}px "${family}"`}
 
 function drawTemplate(){
   const c=CONFIG.template;
-  const off=document.createElement("canvas");off.width=CONFIG.canvas.width;off.height=CONFIG.canvas.height;
-  const o=off.getContext("2d");
-  o.drawImage(assets.template,c.x,c.y,c.width,c.height);
-  o.globalCompositeOperation="destination-out";
-  o.fillRect(c.lineErase.x,c.lineErase.y,c.lineErase.width,c.lineErase.height);
   ctx.save();
   ctx.globalAlpha=c.opacity;
   ctx.globalCompositeOperation="source-over";
-  ctx.drawImage(off,0,0);
-  ctx.fillStyle=c.line.color;
-  ctx.fillRect(c.line.x,c.line.y,c.line.width,c.line.height);
+  ctx.drawImage(assets.template,c.x,c.y,c.width,c.height);
   ctx.restore();
 }
+function drawOverlay(){
+  const c=CONFIG.overlay,g=ctx.createLinearGradient(0,c.y,0,c.y+c.height);
+  g.addColorStop(0,c.top);g.addColorStop(1,c.bottom);
+  ctx.save();ctx.fillStyle=g;ctx.fillRect(c.x,c.y,c.width,c.height);ctx.restore();
+}
 function drawTextureTime(text){
-  const c=CONFIG.time,off=document.createElement("canvas");off.width=CONFIG.canvas.width;off.height=CONFIG.canvas.height;
-  const o=off.getContext("2d"),vScale=c.verticalScale||1;o.save();o.scale(c.horizontalScale,vScale);o.font=font(c.fontSize,CONFIG.fonts.en);o.textBaseline="alphabetic";o.fillStyle=c.fill;o.fillText(text,c.x/c.horizontalScale,c.y/vScale,c.maxWidth/c.horizontalScale);o.restore();
-  const wave=document.createElement("canvas");wave.width=CONFIG.canvas.width;wave.height=CONFIG.canvas.height;
-  const gradient=o.createLinearGradient(0,c.y-c.fontSize*vScale,0,c.y);gradient.addColorStop(0,c.gradientTop);gradient.addColorStop(1,c.gradientBottom);
-  o.save();o.globalCompositeOperation="source-atop";o.globalAlpha=c.gradientOpacity;o.fillStyle=gradient;o.fillRect(0,c.y-c.fontSize*vScale,c.maxWidth,c.fontSize*vScale);o.restore();
-  const w=wave.getContext("2d");w.drawImage(assets.texture,0,0,CONFIG.canvas.width,CONFIG.canvas.height);
-  o.save();o.globalCompositeOperation="source-atop";o.globalAlpha=c.textureOpacity;c.textureOffsets.forEach(([dx,dy])=>o.drawImage(wave,dx,dy));o.restore();
+  const c=CONFIG.time,vScale=c.verticalScale||1;
+  const off=document.createElement("canvas");off.width=CONFIG.canvas.width;off.height=CONFIG.canvas.height;
+  const o=off.getContext("2d");
+  o.save();o.scale(c.horizontalScale,vScale);o.font=font(c.fontSize,CONFIG.fonts.en);o.textBaseline="alphabetic";o.fillStyle="#000";o.fillText(text,c.x/c.horizontalScale,c.y/vScale,c.maxWidth/c.horizontalScale);o.restore();
+  const fill=document.createElement("canvas");fill.width=CONFIG.canvas.width;fill.height=CONFIG.canvas.height;
+  const f=fill.getContext("2d"),top=c.y-c.fontSize*vScale,gradient=f.createLinearGradient(0,top,0,c.y);
+  f.fillStyle=c.baseFill;f.fillRect(c.x,top,c.maxWidth,c.fontSize*vScale);
+  gradient.addColorStop(0,c.gradientTop);gradient.addColorStop(1,c.gradientBottom);
+  f.save();f.globalAlpha=c.gradientOpacity;f.fillStyle=gradient;f.fillRect(c.x,top,c.maxWidth,c.fontSize*vScale);f.restore();
+  f.save();f.globalAlpha=c.textureOpacity;c.textureOffsets.forEach(([dx,dy])=>f.drawImage(assets.texture,dx,dy,CONFIG.canvas.width,CONFIG.canvas.height));f.restore();
+  o.save();o.globalCompositeOperation="source-in";o.drawImage(fill,0,0);o.restore();
   ctx.drawImage(off,0,0);ctx.save();ctx.scale(c.horizontalScale,vScale);ctx.font=font(c.fontSize,CONFIG.fonts.en);ctx.textBaseline="alphabetic";ctx.strokeStyle=c.stroke;ctx.lineWidth=c.lineWidth;ctx.shadowColor=c.shadowColor;ctx.shadowBlur=c.shadowBlur;ctx.shadowOffsetY=c.shadowOffsetY;ctx.strokeText(text,c.x/c.horizontalScale,c.y/vScale,c.maxWidth/c.horizontalScale);ctx.restore();
   return measure(text,c,CONFIG.fonts.en);
 }
@@ -75,7 +78,7 @@ function render(){
   const v=values();
   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
   if(photo){const f=fitCover(photo.naturalWidth,photo.naturalHeight,width,height);ctx.drawImage(photo,f.x,f.y,f.width,f.height)}else{ctx.fillStyle="#202020";ctx.fillRect(0,0,width,height);ctx.fillStyle="#777";ctx.font='48px HYQiHei';ctx.textAlign="center";ctx.fillText("请选择一张图片",width/2,height/2);ctx.textAlign="start"}
-  drawTemplate();const boxes={};boxes.time=drawTextureTime(v.time);
+  drawOverlay();drawTemplate();const boxes={};boxes.time=drawTextureTime(v.time);
   boxes.date=drawFit(v.date,CONFIG.date,CONFIG.fonts.en);
   boxes.week=drawWeek(`${v.week}  ${v.weather}`);
   boxes.location=drawFit(v.location,CONFIG.location,CONFIG.fonts.zh);
