@@ -4,7 +4,7 @@ const CONFIG = Object.freeze({
   template:{x:0,y:0,width:2448,height:3264,opacity:1,lineErase:{x:560,y:2750,width:120,height:300},line:{x:576,y:2786,width:18,height:212,color:"#ffc600"}},
   fonts:{zh:"HYQiHei",en:"DINAlternate"},
   defaults:{time:"09:02",date:"2026-07-04",week:"星期六",weather:"晴  29°C",location:"济宁市邹城市·太平东路",code:"ECEYKNUW123456"},
-  time:{x:35,y:2967,fontSize:254.58,horizontalScale:.9,verticalScale:.9,maxWidth:540,fill:"#fff",textureColor:"rgba(145,178,205,.16)",textureOpacity:.16,lineWidth:0,stroke:"rgba(255,255,255,0)",shadowColor:"rgba(0,0,0,0)",shadowBlur:0,shadowOffsetY:0,textureOffsets:[[0,0]]},
+  time:{x:35,y:2967,fontSize:254.58,horizontalScale:.9,verticalScale:.9,maxWidth:540,fill:"#fff",textureColor:"rgba(145,190,210,.22)",textureOpacity:.18,lineWidth:0,stroke:"rgba(255,255,255,0)",shadowColor:"rgba(0,0,0,0)",shadowBlur:0,shadowOffsetY:0,textureOffsets:[[0,0]]},
   date:{x:646,y:2859,fontSize:120.4,horizontalScale:.83,verticalScale:.86,maxWidth:620,minFontSize:60},
   week:{x:648,y:2998,fontSize:109.75,horizontalScale:.83,verticalScale:.78,maxWidth:850,minFontSize:55},
   location:{x:56,y:3141.45,fontSize:83.8,horizontalScale:.815,verticalScale:1,minFontSize:42,maxWidth:1500,ellipsis:true},
