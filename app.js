@@ -2,10 +2,10 @@ const CONFIG = Object.freeze({
   canvas:{width:2448,height:3264},
   assets:{template:"./assets/watermark-template.png",texture:"./assets/time-texture.png",referenceComposite:"./assets/reference.png",defaultPhoto:"./assets/test-render-source.png"},
   overlay:{x:0,y:2300,width:2448,height:964,top:"rgba(0,0,0,0)",bottom:"rgba(0,0,0,.36)"},
-  template:{x:0,y:0,width:2448,height:3264,opacity:1},
+  template:{x:0,y:0,width:2448,height:3264,opacity:1,opacityBoost:4},
   fonts:{zh:"HYQiHei",en:"DINAlternate"},
   defaults:{time:"09:02",date:"2026-07-04",week:"星期六",weather:"晴  29°C",location:"济宁市邹城市·太平东路",code:"ECEYKNUW123456"},
-  time:{x:35,y:2967,fontSize:254.58,horizontalScale:.9,verticalScale:.9,maxWidth:540,baseFill:"#fff",textureOpacity:.42,gradientOpacity:.26,gradientTop:"rgba(255,255,255,0)",gradientBottom:"rgba(116,170,205,.58)",lineWidth:0,stroke:"rgba(255,255,255,0)",shadowColor:"rgba(0,0,0,0)",shadowBlur:0,shadowOffsetY:0,textureOffsets:[[0,0]]},
+  time:{x:35,y:2967,fontSize:254.58,horizontalScale:.9,verticalScale:.9,maxWidth:540,baseFill:"#fff",textureOpacity:.95,gradientOpacity:.14,gradientTop:"rgba(255,255,255,0)",gradientBottom:"rgba(116,170,205,.42)",lineWidth:0,stroke:"rgba(255,255,255,0)",shadowColor:"rgba(0,0,0,0)",shadowBlur:0,shadowOffsetY:0,textureOffsets:[[0,0]]},
   date:{x:646,y:2859,fontSize:120.4,horizontalScale:.83,verticalScale:.86,maxWidth:620,minFontSize:60},
   week:{x:648,y:2998,fontSize:109.75,horizontalScale:.83,verticalScale:.78,maxWidth:850,minFontSize:55},
   location:{x:56,y:3141.45,fontSize:83.8,horizontalScale:.815,verticalScale:1,minFontSize:42,maxWidth:1500,ellipsis:true},
@@ -32,7 +32,7 @@ function drawTemplate(){
   ctx.save();
   ctx.globalAlpha=c.opacity;
   ctx.globalCompositeOperation="source-over";
-  ctx.drawImage(assets.template,c.x,c.y,c.width,c.height);
+  for(let i=0;i<c.opacityBoost;i++)ctx.drawImage(assets.template,c.x,c.y,c.width,c.height);
   ctx.restore();
 }
 function drawOverlay(){
